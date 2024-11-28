@@ -6,7 +6,7 @@ export default tryCatch(async function (token) {
   }
 
   let response = await fetch(
-    process.env.NEXT_PUBLIC_BACKEND_ORIGIN + "/api/jobs",
+    process.env.NEXT_PUBLIC_BACKEND_ORIGIN + "/api/jobs?populate=*",
     {
       method: "GET",
       headers: headersList,
