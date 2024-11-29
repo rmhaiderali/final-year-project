@@ -1,4 +1,6 @@
 import { ToastContainer } from "react-toastify"
+import { UserProvider } from "@/contexts/user-context"
+import UserLoader from "../components/custom/user-loader"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import "react-toastify/dist/ReactToastify.css"
@@ -14,8 +16,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ToastContainer closeOnClick={false} draggable={false} />
-        {children}
+        <UserProvider>
+          <ToastContainer closeOnClick={false} draggable={false} />
+          <UserLoader>{children}</UserLoader>
+        </UserProvider>
       </body>
     </html>
   )

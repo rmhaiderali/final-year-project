@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -10,56 +11,79 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { JobStatistics } from "@/components/job-statistics"
 //
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import getTokenAndUser from "@/utils/getTokenAndUser"
-import Loading from "@/utils/components/Loading"
+import { useEffect } from "react"
+import { Loading } from "@/components/custom/loading"
 import getAllJobs from "@/utils/getAllJobs"
 import { toast } from "react-toastify"
+import { useUserContext } from "@/contexts/user-context"
+import { useRouter } from "next/navigation"
 
-// Mock data for job statistics
-const jobStats = {
-  totalJobs: 5000,
-  averageSalary: 45000,
-  maxSalary: 150000,
-  minSalary: 20000,
+function getJobStatistics(jobs) {
+  if (!jobs || !jobs.length)
+    return { totalJobs: 0, averageSalary: 0, maxSalary: 0, minSalary: 0 }
+
+  const salaries = jobs.map((job) => job.attributes.salary)
+
+  const totalJobs = jobs.length
+
+  const totalSalary = salaries.reduce((acc, salary) => acc + salary, 0)
+  const averageSalary = Math.ceil(totalSalary / totalJobs)
+
+  const maxSalary = Math.max(...salaries)
+  const minSalary = Math.min(...salaries)
+
+  return { totalJobs, averageSalary, maxSalary, minSalary }
 }
 
 export default function Home() {
+  const { user } = useUserContext()
   const router = useRouter()
 
-  const [user, setUser] = useState(null)
-  const [JWT, setJWT] = useState("")
-  const [jobs, setJobs] = useState([])
+  const [jobs, setJobs] = useState(null)
+  const [areJobsLoading, setAreJobsLoading] = useState(false)
+  const [searchJobTitle, setSearchJobTitle] = useState("")
+  const [searchLocation, setSearchLocation] = useState("")
+  const [searchCompany, setSearchCompany] = useState("")
+  const [filtersArray, setFiltersArray] = useState(
+    Array.from({ length: 16 }).fill(false)
+  )
 
-  useEffect(() => {
-    async function init() {
-      const [token, userdata] = await getTokenAndUser()
-      if (!token) return router.replace("/login")
+  const [currentPage, setCurrentPage] = useState(1)
+  const jobsPerPage = 6
+  const totalPages = Math.ceil((jobs?.data?.length || 0) / jobsPerPage)
 
-      setJWT(token)
-      setUser(userdata)
+  const indexOfLastJob = currentPage * jobsPerPage
+  const indexOfFirstJob = indexOfLastJob - jobsPerPage
+  const currentJobs = jobs?.data?.slice(indexOfFirstJob, indexOfLastJob)
 
-      const data = await getAllJobs(token)
+  const toggleFilterIndex = (index) => {
+    filtersArray[index] = !filtersArray[index]
+    setFiltersArray([...filtersArray])
+  }
 
-      if (data.error) {
-        return toast.error(data.error.message)
-      }
+  async function fetchJobs() {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+    setCurrentPage(1)
 
-      setJobs(data.data)
+    setAreJobsLoading(true)
+    const data = await getAllJobs({
+      title: searchJobTitle,
+      location: searchLocation,
+      company: searchCompany,
+      filtersArray,
+    })
+    setAreJobsLoading(false)
+
+    if (data.error) {
+      return toast.error(data.error.message)
     }
 
-    init()
-  }, [])
+    setJobs(data)
+  }
 
-  if (!user || !jobs)
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <Loading />
-        <Footer />
-      </div>
-    )
+  useEffect(() => {
+    fetchJobs()
+  }, [filtersArray])
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -72,9 +96,31 @@ export default function Home() {
             <div className="space-y-4">
               {/* Search inputs */}
               <div className="bg-white p-6 rounded-lg shadow-sm space-y-4">
-                <Input type="text" placeholder="Job Title" className="w-full" />
-                <Input type="text" placeholder="Location" className="w-full" />
-                <Button className="w-full bg-black hover:bg-gray-800">
+                <Input
+                  type="text"
+                  placeholder="Job Title"
+                  className="w-full"
+                  value={searchJobTitle}
+                  onChange={(e) => setSearchJobTitle(e.target.value)}
+                />
+                <Input
+                  type="text"
+                  placeholder="Location"
+                  className="w-full"
+                  value={searchLocation}
+                  onChange={(e) => setSearchLocation(e.target.value)}
+                />
+                <Input
+                  type="text"
+                  placeholder="Company"
+                  className="w-full"
+                  value={searchCompany}
+                  onChange={(e) => setSearchCompany(e.target.value)}
+                />
+                <Button
+                  className="w-full bg-black hover:bg-gray-800"
+                  onClick={fetchJobs}
+                >
                   Search Jobs
                 </Button>
               </div>
@@ -84,27 +130,43 @@ export default function Home() {
                 <h2 className="font-semibold mb-4">Salary Range</h2>
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="salary-1" />
-                    <label htmlFor="salary-1" className="text-sm">
-                      20,000 - 30,000 PKR
+                    <Checkbox
+                      id="salary-1"
+                      checked={filtersArray[0]}
+                      onClick={() => toggleFilterIndex(0)}
+                    />
+                    <label htmlFor="salary-1" className="text-sm select-none">
+                      30 000 - 50 000 PKR
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="salary-2" />
-                    <label htmlFor="salary-2" className="text-sm">
-                      30,000 - 40,000 PKR
+                    <Checkbox
+                      id="salary-2"
+                      checked={filtersArray[1]}
+                      onClick={() => toggleFilterIndex(1)}
+                    />
+                    <label htmlFor="salary-2" className="text-sm select-none">
+                      50 000 - 70 000 PKR
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="salary-3" />
-                    <label htmlFor="salary-3" className="text-sm">
-                      40,000 - 50,000 PKR
+                    <Checkbox
+                      id="salary-3"
+                      checked={filtersArray[2]}
+                      onClick={() => toggleFilterIndex(2)}
+                    />
+                    <label htmlFor="salary-3" className="text-sm select-none">
+                      70 000 - 90 000 PKR
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="salary-4" />
-                    <label htmlFor="salary-4" className="text-sm">
-                      Above 50,000 PKR
+                    <Checkbox
+                      id="salary-4"
+                      checked={filtersArray[3]}
+                      onClick={() => toggleFilterIndex(3)}
+                    />
+                    <label htmlFor="salary-4" className="text-sm select-none">
+                      Above 90 000 PKR
                     </label>
                   </div>
                 </div>
@@ -115,26 +177,48 @@ export default function Home() {
                 <h2 className="font-semibold mb-4">Education</h2>
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="edu-phd" />
-                    <label htmlFor="edu-phd" className="text-sm">
+                    <Checkbox
+                      id="edu-phd"
+                      checked={filtersArray[4]}
+                      onClick={() => toggleFilterIndex(4)}
+                    />
+                    <label htmlFor="edu-phd" className="text-sm select-none">
                       Ph.D.
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="edu-master" />
-                    <label htmlFor="edu-master" className="text-sm">
+                    <Checkbox
+                      id="edu-master"
+                      checked={filtersArray[5]}
+                      onClick={() => toggleFilterIndex(5)}
+                    />
+                    <label htmlFor="edu-master" className="text-sm select-none">
                       Master
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="edu-bachelor" />
-                    <label htmlFor="edu-bachelor" className="text-sm">
+                    <Checkbox
+                      id="edu-bachelor"
+                      checked={filtersArray[6]}
+                      onClick={() => toggleFilterIndex(6)}
+                    />
+                    <label
+                      htmlFor="edu-bachelor"
+                      className="text-sm select-none"
+                    >
                       Bachelor
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="edu-intermediate" />
-                    <label htmlFor="edu-intermediate" className="text-sm">
+                    <Checkbox
+                      id="edu-intermediate"
+                      checked={filtersArray[7]}
+                      onClick={() => toggleFilterIndex(7)}
+                    />
+                    <label
+                      htmlFor="edu-intermediate"
+                      className="text-sm select-none"
+                    >
                       Intermediate
                     </label>
                   </div>
@@ -146,26 +230,54 @@ export default function Home() {
                 <h2 className="font-semibold mb-4">Job Type</h2>
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="type-permanent" />
-                    <label htmlFor="type-permanent" className="text-sm">
+                    <Checkbox
+                      id="type-permanent"
+                      checked={filtersArray[8]}
+                      onClick={() => toggleFilterIndex(8)}
+                    />
+                    <label
+                      htmlFor="type-permanent"
+                      className="text-sm select-none"
+                    >
                       Permanent
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="type-contract" />
-                    <label htmlFor="type-contract" className="text-sm">
+                    <Checkbox
+                      id="type-contract"
+                      checked={filtersArray[9]}
+                      onClick={() => toggleFilterIndex(9)}
+                    />
+                    <label
+                      htmlFor="type-contract"
+                      className="text-sm select-none"
+                    >
                       Contract
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="type-fulltime" />
-                    <label htmlFor="type-fulltime" className="text-sm">
+                    <Checkbox
+                      id="type-fulltime"
+                      checked={filtersArray[10]}
+                      onClick={() => toggleFilterIndex(10)}
+                    />
+                    <label
+                      htmlFor="type-fulltime"
+                      className="text-sm select-none"
+                    >
                       Full Time
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="type-parttime" />
-                    <label htmlFor="type-parttime" className="text-sm">
+                    <Checkbox
+                      id="type-parttime"
+                      checked={filtersArray[11]}
+                      onClick={() => toggleFilterIndex(11)}
+                    />
+                    <label
+                      htmlFor="type-parttime"
+                      className="text-sm select-none"
+                    >
                       Part Time
                     </label>
                   </div>
@@ -177,27 +289,43 @@ export default function Home() {
                 <h2 className="font-semibold mb-4">Experience Required</h2>
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="exp-1" />
-                    <label htmlFor="exp-1" className="text-sm">
-                      1 year
+                    <Checkbox
+                      id="exp-1"
+                      checked={filtersArray[12]}
+                      onClick={() => toggleFilterIndex(12)}
+                    />
+                    <label htmlFor="exp-1" className="text-sm select-none">
+                      1 to 2 year
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="exp-2" />
-                    <label htmlFor="exp-2" className="text-sm">
-                      2 years
+                    <Checkbox
+                      id="exp-2"
+                      checked={filtersArray[13]}
+                      onClick={() => toggleFilterIndex(13)}
+                    />
+                    <label htmlFor="exp-2" className="text-sm select-none">
+                      3 to 5 years
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="exp-3" />
-                    <label htmlFor="exp-3" className="text-sm">
-                      3 years
+                    <Checkbox
+                      id="exp-3"
+                      checked={filtersArray[14]}
+                      onClick={() => toggleFilterIndex(14)}
+                    />
+                    <label htmlFor="exp-3" className="text-sm select-none">
+                      5 to 9 years
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="exp-5" />
-                    <label htmlFor="exp-5" className="text-sm">
-                      5+ years
+                    <Checkbox
+                      id="exp-5"
+                      checked={filtersArray[15]}
+                      onClick={() => toggleFilterIndex(15)}
+                    />
+                    <label htmlFor="exp-5" className="text-sm select-none">
+                      10+ years
                     </label>
                   </div>
                 </div>
@@ -206,99 +334,120 @@ export default function Home() {
 
             {/* Job Listings and Statistics */}
             <div className="lg:col-span-3 space-y-6">
-              {/* Job Statistics */}
-              <JobStatistics {...jobStats} />
+              {areJobsLoading ? (
+                <div className="p-32">
+                  <Loading />
+                </div>
+              ) : jobs?.data?.length ? (
+                <>
+                  {/* Job Statistics */}
+                  <JobStatistics {...getJobStatistics(jobs?.data)} />
 
-              {/* Job Listings */}
-              <div className="grid md:grid-cols-2 gap-6">
-                {/* Job Card 1 */}
-                <Card className="border-0 shadow-sm">
-                  <CardContent className="pt-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-semibold text-lg">
-                          Software Engineer
-                        </h3>
-                        <span className="bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded">
-                          Permanent
-                        </span>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex items-center text-muted-foreground">
-                          <Building2 className="h-4 w-4 mr-2" />
-                          <span>Industry: Banking</span>
-                        </div>
-                        <div className="flex items-center text-muted-foreground">
-                          <GraduationCap className="h-4 w-4 mr-2" />
-                          <span>Education Required: Bachelor</span>
-                        </div>
-                        <div className="flex items-center text-muted-foreground">
-                          <Banknote className="h-4 w-4 mr-2" />
-                          <span>Salary: 30000 PKR</span>
-                        </div>
-                        <div className="flex items-center text-muted-foreground">
-                          <Calendar className="h-4 w-4 mr-2" />
-                          <span>Last Date to Apply: June 30, 2023</span>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex gap-2">
-                    <Button className="w-full bg-black hover:bg-gray-800">
-                      Apply Now
-                    </Button>
-                    <Link href="/jobs/1" className="w-full">
-                      <Button variant="outline" className="w-full">
-                        Details
-                      </Button>
-                    </Link>
-                  </CardFooter>
-                </Card>
+                  {/* Job Listings */}
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {currentJobs?.map((job) => (
+                      <Card key={job.id} className="border-0 shadow-sm">
+                        <CardContent className="pt-6">
+                          <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                              <h3 className="font-semibold text-lg">
+                                {job.attributes.title}
+                              </h3>
+                              <span className="bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded">
+                                {job.attributes.type}
+                              </span>
+                            </div>
+                            <div className="space-y-2">
+                              <div className="flex items-center text-muted-foreground">
+                                <Building2 className="h-4 w-4 mr-2" />
+                                <span>
+                                  {job.attributes.creator.data.attributes.name}
+                                </span>
+                              </div>
+                              <div className="flex items-center text-muted-foreground">
+                                <GraduationCap className="h-4 w-4 mr-2" />
+                                <span>
+                                  Education Required: {job.attributes.education}
+                                </span>
+                              </div>
+                              <div className="flex items-center text-muted-foreground">
+                                <Banknote className="h-4 w-4 mr-2" />
+                                <span>Salary: {job.attributes.salary}</span>
+                              </div>
+                              <div className="flex items-center text-muted-foreground">
+                                <Calendar className="h-4 w-4 mr-2" />
+                                <span>
+                                  Last Date to Apply: {job.attributes.deadline}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                        <CardFooter className="flex gap-2">
+                          {!user?.isCompany && (
+                            <Button
+                              className="w-full bg-black hover:bg-gray-800"
+                              onClick={() => {
+                                if (user) window.alert("apply")
+                                else router.push("/login")
+                              }}
+                            >
+                              Apply Now
+                            </Button>
+                          )}
+                          <Link href={`/job/${job.id}`} className="w-full">
+                            <Button variant="outline" className="w-full">
+                              Details
+                            </Button>
+                          </Link>
+                        </CardFooter>
+                      </Card>
+                    ))}
+                  </div>
 
-                {/* Job Card 2 */}
-                <Card className="border-0 shadow-sm">
-                  <CardContent className="pt-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-semibold text-lg">
-                          Business Analyst
-                        </h3>
-                        <span className="bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded">
-                          Permanent
-                        </span>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex items-center text-muted-foreground">
-                          <Building2 className="h-4 w-4 mr-2" />
-                          <span>Industry: Business</span>
-                        </div>
-                        <div className="flex items-center text-muted-foreground">
-                          <GraduationCap className="h-4 w-4 mr-2" />
-                          <span>Education Required: Bachelor</span>
-                        </div>
-                        <div className="flex items-center text-muted-foreground">
-                          <Banknote className="h-4 w-4 mr-2" />
-                          <span>Salary: 30000 PKR</span>
-                        </div>
-                        <div className="flex items-center text-muted-foreground">
-                          <Calendar className="h-4 w-4 mr-2" />
-                          <span>Last Date to Apply: July 15, 2023</span>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex gap-2">
-                    <Button className="w-full bg-black hover:bg-gray-800">
-                      Apply Now
-                    </Button>
-                    <Link href="/jobs/2" className="w-full">
-                      <Button variant="outline" className="w-full">
-                        Details
+                  {/* Updated Pagination */}
+                  <div className="flex justify-center mt-8">
+                    <nav className="inline-flex rounded-md shadow p-2 bg-white">
+                      <Button
+                        onClick={() => setCurrentPage(1)}
+                        disabled={currentPage === 1}
+                        className="select-none px-3 py-2 rounded-l-md"
+                      >
+                        First
                       </Button>
-                    </Link>
-                  </CardFooter>
-                </Card>
-              </div>
+                      <Button
+                        onClick={() => setCurrentPage(totalPages)}
+                        disabled={currentPage === totalPages}
+                        className="select-none px-3 py-2 ml-2"
+                      >
+                        Last
+                      </Button>
+                      <div className="flex items-center justify-center px-3 ml-2 w-[100px] select-none">
+                        {currentPage}/{totalPages}
+                      </div>
+                      <Button
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="select-none px-3 py-2 ml-2"
+                      >
+                        Previous
+                      </Button>
+                      <Button
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="select-none px-3 py-2 ml-2 rounded-r-md"
+                      >
+                        Next
+                      </Button>
+                    </nav>
+                  </div>
+                </>
+              ) : (
+                <div className="text-center p-32">
+                  <p>No Jobs Found</p>
+                  <p>Try searching something else</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

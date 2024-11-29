@@ -1,8 +1,18 @@
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Building2, User } from "lucide-react"
 import Link from "next/link"
+import { useUserContext } from "@/contexts/user-context"
+import { FullScreenLoading } from "@/components/custom/loading"
 
 export default function SignUpTypePage() {
+  const { user } = useUserContext()
+
+  if (user) {
+    return <FullScreenLoading goto={"/"} />
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="container px-4 py-8 max-w-[800px]">

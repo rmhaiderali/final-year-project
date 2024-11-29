@@ -4,15 +4,30 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Upload } from "lucide-react"
 import Link from "next/link"
+import { useUserContext } from "@/contexts/user-context"
+import { toast } from "react-toastify"
+import updateMeJson from "@/utils/updateMe(json)"
+import { FullScreenLoading } from "@/components/custom/loading"
 
 export default function EditUserProfilePage() {
+  const { user, setUser, token } = useUserContext()
+
+  if (!user) {
+    return <FullScreenLoading goto={"/"} />
+  }
+
+  const [updatedUser, setUpdatedUser] = useState({ ...user })
+
+  function setUpdatedUserInfo(e) {
+    setUpdatedUser({ ...updatedUser, [e.target.name]: e.target.value })
+  }
+
   const [isLoading, setIsLoading] = useState(false)
   const [profileImage, setProfileImage] = useState(null)
 
@@ -30,8 +45,20 @@ export default function EditUserProfilePage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsLoading(true)
-    // Add your form submission logic here
-    setTimeout(() => setIsLoading(false), 1000)
+
+    const formData = new FormData(e.target)
+    const jsonData = Object.fromEntries(formData)
+
+    const data = await updateMeJson(token, jsonData)
+
+    if (data !== "OK") {
+      return toast.error("Error during updating profile")
+    } else {
+      setUser(updatedUser)
+      toast.success("Updated profile successfully")
+    }
+
+    setIsLoading(false)
   }
 
   return (
@@ -48,7 +75,10 @@ export default function EditUserProfilePage() {
                 {/* Profile Picture */}
                 <div className="flex flex-col items-center space-y-4">
                   <Avatar className="w-32 h-32">
-                    <AvatarImage src={profileImage || ""} />
+                    <AvatarImage
+                      src={profileImage || ""}
+                      className="object-cover"
+                    />
                     <AvatarFallback>
                       <Upload className="w-8 h-8 text-muted-foreground" />
                     </AvatarFallback>
@@ -73,47 +103,113 @@ export default function EditUserProfilePage() {
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => setProfileImage(null)}
+                      onClick={() => {
+                        setProfileImage(null)
+                        document.getElementById("picture").value = ""
+                      }}
                     >
                       Remove
                     </Button>
                   </div>
                 </div>
 
-                <div className="grid gap-4">
-                  <div className="grid gap-2">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
                     <Label htmlFor="name">Name</Label>
-                    <Input id="name" placeholder="Enter your name" />
+                    <Input
+                      id="name"
+                      name="name"
+                      placeholder="Enter name"
+                      value={updatedUser.name}
+                      onChange={setUpdatedUserInfo}
+                      required
+                    />
                   </div>
-
-                  <div className="grid gap-2">
+                  <div className="space-y-2">
                     <Label htmlFor="username">Username</Label>
-                    <Input id="username" placeholder="Enter your username" />
+                    <Input
+                      id="username"
+                      name="username"
+                      placeholder="Enter username"
+                      value={updatedUser.username}
+                      onChange={setUpdatedUserInfo}
+                      required
+                    />
                   </div>
-
-                  <div className="grid gap-2">
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <Input
                       id="email"
+                      name="email"
                       type="email"
-                      placeholder="Enter your email"
+                      placeholder="Enter email"
+                      value={updatedUser.email}
+                      onChange={setUpdatedUserInfo}
+                      required
                     />
                   </div>
-
-                  <div className="grid gap-2">
-                    <Label htmlFor="bio">Bio</Label>
-                    <Textarea id="bio" placeholder="Tell us about yourself" />
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      placeholder="Enter phone number"
+                      value={updatedUser.phone}
+                      onChange={setUpdatedUserInfo}
+                      required
+                    />
                   </div>
-
-                  <div className="grid gap-2">
-                    <Label htmlFor="location">Location</Label>
-                    <Input id="location" placeholder="Enter your location" />
-                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="address">Address</Label>
+                  <Input
+                    id="address"
+                    name="address"
+                    placeholder="Enter address"
+                    value={updatedUser.address}
+                    onChange={setUpdatedUserInfo}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="bio">
+                    {user.isCompany ? "About" : "Bio"}
+                  </Label>
+                  <Input
+                    id="bio"
+                    name="bio"
+                    placeholder={
+                      "Tell us about " +
+                      (user.isCompany ? "company" : "yourself")
+                    }
+                    value={updatedUser.bio}
+                    onChange={setUpdatedUserInfo}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="website">
+                    {user.isCompany ? "Website" : "Social Profile"}
+                  </Label>
+                  <Input
+                    id="website"
+                    name="website"
+                    type="url"
+                    placeholder={
+                      user.isCompany
+                        ? "https://example.com"
+                        : "https://twitter.com/user"
+                    }
+                    value={updatedUser.website}
+                    onChange={setUpdatedUserInfo}
+                  />
                 </div>
 
                 <div className="flex justify-between">
                   <Link href="/profile">
-                    <Button variant="outline">Cancel</Button>
+                    <Button variant="outline">Back</Button>
                   </Link>
                   <Button type="submit" disabled={isLoading}>
                     {isLoading ? "Updating..." : "Update Profile"}

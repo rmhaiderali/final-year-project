@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Building2 } from "lucide-react"
 import Link from "next/link"
 
-export default function EditCompanyProfilePage() {
+export default function EditProfilePage() {
   const [isLoading, setIsLoading] = useState(false)
   const [logoImage, setLogoImage] = useState(null)
 
@@ -138,7 +138,7 @@ export default function EditCompanyProfilePage() {
                 </div>
 
                 <div className="flex justify-between">
-                  <Link href="/profile/company">
+                  <Link href="/profile">
                     <Button variant="outline">Cancel</Button>
                   </Link>
                   <Button type="submit" disabled={isLoading}>

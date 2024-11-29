@@ -8,7 +8,7 @@ export default function NotFound() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
+        <div className="text-center px-8 py-[135px]">
           <h1 className="text-4xl font-bold mb-4">404 - Page Not Found</h1>
           <p className="text-xl text-muted-foreground mb-8">
             Oops! The page you're looking for doesn't exist.
