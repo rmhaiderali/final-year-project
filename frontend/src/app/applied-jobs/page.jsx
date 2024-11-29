@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import {
   Table,
@@ -10,6 +12,8 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+import { useUserContext } from "@/contexts/user-context"
+import { FullScreenLoading } from "@/components/custom/loading"
 
 // This would typically come from an API or database
 const appliedJobs = [
@@ -44,6 +48,12 @@ const appliedJobs = [
 ]
 
 export default function AppliedJobsPage() {
+  const { user } = useUserContext()
+
+  if (!user || user.isCompany) {
+    return <FullScreenLoading goto={"/"} />
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />

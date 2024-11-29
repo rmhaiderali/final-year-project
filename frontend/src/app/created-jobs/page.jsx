@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/dialog"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+import { useUserContext } from "@/contexts/user-context"
+import { FullScreenLoading } from "@/components/custom/loading"
 
 // This would typically come from an API or database
 const postedJobs = [
@@ -45,6 +47,12 @@ const postedJobs = [
 ]
 
 export default function CreatedJobsPage() {
+  const { user } = useUserContext()
+
+  if (!user || !user.isCompany) {
+    return <FullScreenLoading goto={"/"} />
+  }
+
   const [selectedJob, setSelectedJob] = useState(null)
 
   const handleStatusChange = (jobId, applicantId, newStatus) => {

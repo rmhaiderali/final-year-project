@@ -12,15 +12,51 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { useState } from "react"
+import { useUserContext } from "@/contexts/user-context"
+import { FullScreenLoading } from "@/components/custom/loading"
+import signupJson from "@/utils/signup(json)"
+import { toast } from "react-toastify"
+import { useRouter } from "next/navigation"
 
 export default function CandidateSignUpPage() {
+  const { user, setToken, setUser } = useUserContext()
+
+  if (user) {
+    return <FullScreenLoading goto={"/"} />
+  }
+
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
   async function onSubmit(e) {
     e.preventDefault()
     setIsLoading(true)
-    // Add your signup logic here
-    setTimeout(() => setIsLoading(false), 1000)
+
+    const formData = new FormData(e.target)
+    const jsonData = Object.fromEntries(formData)
+    console.log(jsonData)
+    if (jsonData.password !== jsonData.confirmPassword) {
+      setIsLoading(false)
+      return toast.error("Passwords do not match")
+    }
+
+    delete jsonData.confirmPassword
+
+    jsonData.isCompany = false
+
+    const data = await signupJson(jsonData)
+
+    if (data.error) {
+      toast.error(data.error.message)
+    } else {
+      toast.success("Sign up successful")
+      localStorage.setItem("token", data.jwt)
+      setToken(data.jwt)
+      setUser(data.user)
+      router.push("/")
+    }
+
+    setIsLoading(false)
   }
 
   return (
@@ -37,59 +73,92 @@ export default function CandidateSignUpPage() {
             <form onSubmit={onSubmit} className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
+                  <Label htmlFor="name">Name</Label>
                   <Input
-                    id="firstName"
-                    placeholder="Enter your first name"
+                    id="name"
+                    name="name"
+                    placeholder="Enter your name"
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
+                  <Label htmlFor="username">Username</Label>
                   <Input
-                    id="lastName"
-                    placeholder="Enter your last name"
+                    id="username"
+                    name="username"
+                    placeholder="Enter your username"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    placeholder="Enter your phone number"
                     required
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="address">Address</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
+                  id="address"
+                  name="address"
+                  placeholder="Enter your address"
                   required
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
+              {/* <div className="space-y-2">
+                <Label htmlFor="website">Social Profile</Label>
                 <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="Enter your phone number"
+                  id="website"
+                  name="website"
+                  type="url"
+                  placeholder="https://twitter.com/user"
                   required
                 />
+              </div> */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="Create a password"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    placeholder="Confirm your password"
+                    required
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Create a password"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="Confirm your password"
-                  required
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="w-full mt-[30px!important]"
+                disabled={isLoading}
+              >
                 {isLoading ? "Creating Account..." : "Create Account"}
               </Button>
             </form>
