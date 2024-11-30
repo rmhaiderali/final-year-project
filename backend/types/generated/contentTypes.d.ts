@@ -368,20 +368,50 @@ export interface ApiJobJob extends Schema.CollectionType {
     singularName: 'job';
     pluralName: 'jobs';
     displayName: 'Job';
+    description: '';
   };
   options: {
     draftAndPublish: true;
   };
   attributes: {
     title: Attribute.String & Attribute.Required;
-    type: Attribute.Enumeration<['Permanent', 'Contract']> & Attribute.Required;
-    education: Attribute.Enumeration<['Master', 'Bachlor', 'Intermediate']> &
+    type: Attribute.Enumeration<
+      ['Permanent', 'Contract', 'Full Time', 'Part Time']
+    > &
+      Attribute.Required;
+    education: Attribute.Enumeration<
+      ['Ph.D.', 'Master', 'Bachelor', 'Intermediate']
+    > &
       Attribute.Required;
     industry: Attribute.Enumeration<
       ['Business', 'Banking', 'Education', 'Telecommunication', 'Others']
     > &
       Attribute.Required;
     salary: Attribute.Integer & Attribute.Required;
+    applicants: Attribute.Relation<
+      'api::job.job',
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
+    creator: Attribute.Relation<
+      'api::job.job',
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    deadline: Attribute.Date & Attribute.Required;
+    experience: Attribute.Integer & Attribute.Required;
+    description: Attribute.Text & Attribute.Required;
+    images: Attribute.Media<'images', true>;
+    acceptedApplicants: Attribute.Relation<
+      'api::job.job',
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
+    rejectedApplicants: Attribute.Relation<
+      'api::job.job',
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -800,10 +830,36 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'manyToOne',
       'plugin::users-permissions.role'
     >;
-    profilePicture: Attribute.String;
     name: Attribute.String & Attribute.Required;
-    company: Attribute.String & Attribute.Required;
-    address: Attribute.String & Attribute.Required;
+    address: Attribute.String;
+    appliedJobs: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'manyToMany',
+      'api::job.job'
+    >;
+    createdJobs: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'oneToMany',
+      'api::job.job'
+    >;
+    cv: Attribute.Media<'files', true>;
+    isCompany: Attribute.Boolean &
+      Attribute.Required &
+      Attribute.DefaultTo<false>;
+    profilePicture: Attribute.Media<'images'>;
+    phone: Attribute.String;
+    website: Attribute.String;
+    bio: Attribute.String;
+    acceptedJobs: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'manyToMany',
+      'api::job.job'
+    >;
+    rejectedJobs: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'manyToMany',
+      'api::job.job'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
