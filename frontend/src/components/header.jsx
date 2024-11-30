@@ -10,37 +10,29 @@ export function Header() {
   return (
     <header className="bg-white border-b">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold text-primary">
-          JobFinder
+        <Link
+          href="/"
+          className="text-2xl font-bold text-primary whitespace-nowrap mr-4"
+        >
+          Job Finder
         </Link>
-        <nav>
-          {user && (
-            <ul className="flex space-x-4">
-              {user.isCompany && (
-                <li>
-                  <Link href="/job/new" className="hover:text-primary">
-                    Create Job
-                  </Link>
-                </li>
-              )}
-              <li>
-                <Link
-                  href={user.isCompany ? "/created-jobs" : "/applied-jobs"}
-                  className="hover:text-primary"
-                >
-                  {user.isCompany ? "Posted Jobs" : "Applied Jobs"}
-                </Link>
-              </li>
-              <li>
-                <Link href="/profile" className="hover:text-primary">
-                  Profile
-                </Link>
-              </li>
-            </ul>
-          )}
-        </nav>
         <div className="flex space-x-2">
-          {user ? (
+          {user && user.isCompany && (
+            <Link href="/job/new">
+              <Button>Create Job</Button>
+            </Link>
+          )}
+          {user && (
+            <Link href={user.isCompany ? "/created-jobs" : "/applied-jobs"}>
+              <Button>{user.isCompany ? "Posted Jobs" : "Applied Jobs"}</Button>
+            </Link>
+          )}
+          {user && (
+            <Link href="/profile">
+              <Button>Profile</Button>
+            </Link>
+          )}
+          {user && (
             <Link href="/login">
               <Button
                 variant="outline"
@@ -53,13 +45,14 @@ export function Header() {
                 Log Out
               </Button>
             </Link>
-          ) : (
+          )}
+          {!user && (
             <>
-              <Link href="/signup">
-                <Button variant="outline">Sign Up</Button>
-              </Link>
               <Link href="/login">
                 <Button>Log In</Button>
+              </Link>
+              <Link href="/signup">
+                <Button variant="outline">Sign Up</Button>
               </Link>
             </>
           )}

@@ -14,38 +14,7 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { useUserContext } from "@/contexts/user-context"
 import { FullScreenLoading } from "@/components/custom/loading"
-
-// This would typically come from an API or database
-const appliedJobs = [
-  {
-    id: 1,
-    title: "Software Engineer",
-    company: "Tech Co",
-    status: "pending",
-    appliedDate: "2023-06-01",
-  },
-  {
-    id: 2,
-    title: "Product Manager",
-    company: "Innovate Inc",
-    status: "accepted",
-    appliedDate: "2023-05-28",
-  },
-  {
-    id: 3,
-    title: "UX Designer",
-    company: "Design Studio",
-    status: "rejected",
-    appliedDate: "2023-05-25",
-  },
-  {
-    id: 4,
-    title: "Data Analyst",
-    company: "Data Corp",
-    status: "pending",
-    appliedDate: "2023-06-03",
-  },
-]
+import Link from "next/link"
 
 export default function AppliedJobsPage() {
   const { user } = useUserContext()
@@ -65,37 +34,49 @@ export default function AppliedJobsPage() {
               <TableRow>
                 <TableHead>Job Title</TableHead>
                 <TableHead>Company</TableHead>
-                <TableHead>Applied Date</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {appliedJobs.map((job) => (
-                <TableRow key={job.id}>
-                  <TableCell className="font-medium">{job.title}</TableCell>
-                  <TableCell>{job.company}</TableCell>
-                  <TableCell>{job.appliedDate}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        job.status === "accepted"
-                          ? "success"
-                          : job.status === "rejected"
-                          ? "destructive"
-                          : "warning"
-                      }
-                    >
-                      {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Button variant="outline" size="sm">
-                      View Details
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {user.appliedJobs.map((job) => {
+                let status = "pending"
+
+                if (user.acceptedJobs.find((j) => j.id === job.id))
+                  status = "accepted"
+
+                if (user.rejectedJobs.find((j) => j.id === job.id))
+                  status = "rejected"
+
+                const color = {
+                  pending: "bg-yellow-500 hover:bg-yellow-500",
+                  accepted: "bg-green-600 hover:bg-green-600",
+                  rejected: "bg-red-500 hover:bg-red-500",
+                }[status]
+
+                return (
+                  <TableRow key={job.id}>
+                    <TableCell className="font-medium">{job.title}</TableCell>
+                    <TableCell>{job.creator.name}</TableCell>
+                    <TableCell>
+                      <Badge
+                        className={
+                          "outline-none border-none shadow-none " + color
+                        }
+                      >
+                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Link href={"/job/" + job.id}>
+                        <Button variant="outline" size="sm">
+                          View Details
+                        </Button>
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
             </TableBody>
           </Table>
         </div>

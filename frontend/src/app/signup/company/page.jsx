@@ -17,6 +17,7 @@ import { FullScreenLoading } from "@/components/custom/loading"
 import signupJson from "@/utils/signup(json)"
 import { toast } from "react-toastify"
 import { useRouter } from "next/navigation"
+import getTokenAndUser from "@/utils/getTokenAndUser"
 
 export default function CompanySignUpPage() {
   const { user, setToken, setUser } = useUserContext()
@@ -34,27 +35,29 @@ export default function CompanySignUpPage() {
 
     const formData = new FormData(e.target)
     const jsonData = Object.fromEntries(formData)
-    console.log(jsonData)
+
     if (jsonData.password !== jsonData.confirmPassword) {
       setIsLoading(false)
       return toast.error("Passwords do not match")
     }
 
     delete jsonData.confirmPassword
-
     jsonData.isCompany = true
 
     const data = await signupJson(jsonData)
-
     if (data.error) {
       toast.error(data.error.message)
-    } else {
-      toast.success("Sign up successful")
-      localStorage.setItem("token", data.jwt)
-      setToken(data.jwt)
-      setUser(data.user)
-      router.push("/")
+      setIsLoading(false)
+      return
     }
+    localStorage.setItem("token", data.jwt)
+
+    const [token, user] = await getTokenAndUser()
+    setToken(token)
+    setUser(user)
+
+    toast.success("Sign up successful")
+    router.push("/")
 
     setIsLoading(false)
   }
@@ -159,7 +162,7 @@ export default function CompanySignUpPage() {
                 className="w-full mt-[30px!important]"
                 disabled={isLoading}
               >
-                {isLoading ? "Creating Account..." : "Create Account"}
+                {isLoading ? "Creating Account" : "Create Account"}
               </Button>
             </form>
             <div className="mt-4 text-center text-sm">

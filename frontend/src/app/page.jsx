@@ -6,17 +6,24 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { Building2, GraduationCap, Banknote, Calendar } from "lucide-react"
+import {
+  Building2,
+  GraduationCap,
+  Banknote,
+  Clock,
+  MapPin,
+  Edit,
+} from "lucide-react"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { JobStatistics } from "@/components/job-statistics"
-//
 import { useEffect } from "react"
 import { Loading } from "@/components/custom/loading"
 import getAllJobs from "@/utils/getAllJobs"
 import { toast } from "react-toastify"
 import { useUserContext } from "@/contexts/user-context"
 import { useRouter } from "next/navigation"
+import updateJob from "@/utils/updateJob"
 
 function getJobStatistics(jobs) {
   if (!jobs || !jobs.length)
@@ -36,7 +43,7 @@ function getJobStatistics(jobs) {
 }
 
 export default function Home() {
-  const { user } = useUserContext()
+  const { user, token } = useUserContext()
   const router = useRouter()
 
   const [jobs, setJobs] = useState(null)
@@ -345,64 +352,157 @@ export default function Home() {
 
                   {/* Job Listings */}
                   <div className="grid md:grid-cols-2 gap-6">
-                    {currentJobs?.map((job) => (
-                      <Card key={job.id} className="border-0 shadow-sm">
-                        <CardContent className="pt-6">
-                          <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                              <h3 className="font-semibold text-lg">
-                                {job.attributes.title}
-                              </h3>
-                              <span className="bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded">
-                                {job.attributes.type}
-                              </span>
+                    {currentJobs?.map((job) => {
+                      const applicants = job.attributes.applicants.data.map(
+                        (applicant) => applicant.id
+                      )
+
+                      const acceptedApplicants =
+                        job.attributes.acceptedApplicants.data.map(
+                          (applicant) => applicant.id
+                        )
+
+                      const rejectedApplicants =
+                        job.attributes.rejectedApplicants.data.map(
+                          (applicant) => applicant.id
+                        )
+
+                      let currentUserStatus = "notapplied"
+
+                      if (applicants.includes(user?.id))
+                        currentUserStatus = "applied"
+
+                      if (acceptedApplicants.includes(user?.id))
+                        currentUserStatus = "accepted"
+
+                      if (rejectedApplicants.includes(user?.id))
+                        currentUserStatus = "rejected"
+
+                      const color = {
+                        applied: "bg-yellow-500 hover:bg-yellow-500 text-white",
+                        accepted: "bg-green-600 hover:bg-green-600  text-white",
+                        rejected: "bg-red-500 hover:bg-red-500 text-white",
+                      }[currentUserStatus]
+
+                      const isExpired =
+                        new Date(job.attributes.deadline) <
+                        new Date(new Date().toDateString())
+
+                      return (
+                        <Card key={job.id} className="border-0 shadow-sm">
+                          <CardContent className="pt-6">
+                            <div className="space-y-4">
+                              <div className="flex items-center justify-between">
+                                <h3 className="font-semibold text-lg">
+                                  {job.attributes.title}
+                                </h3>
+                                <div>
+                                  {currentUserStatus !== "notapplied" && (
+                                    <span
+                                      className={
+                                        "text-xs px-2.5 py-0.5 rounded mr-2 whitespace-nowrap " +
+                                        color
+                                      }
+                                    >
+                                      {currentUserStatus
+                                        .charAt(0)
+                                        .toLocaleUpperCase() +
+                                        currentUserStatus.slice(1)}
+                                    </span>
+                                  )}
+                                  <span className="bg-zinc-200 text-zinc-800 text-xs px-2.5 py-0.5 rounded whitespace-nowrap">
+                                    {job.attributes.type}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="space-y-2">
+                                <div className="flex items-center text-muted-foreground">
+                                  <Building2 className="h-4 w-4 mr-2" />
+                                  <span>
+                                    Company:{" "}
+                                    {
+                                      job.attributes.creator.data.attributes
+                                        .name
+                                    }
+                                  </span>
+                                </div>
+                                <div className="flex items-center text-muted-foreground">
+                                  <MapPin className="h-4 w-4 mr-2" />
+                                  <span>
+                                    Location:{" "}
+                                    {
+                                      job.attributes.creator.data.attributes
+                                        .address
+                                    }
+                                  </span>
+                                </div>
+                                <div className="flex items-center text-muted-foreground">
+                                  <GraduationCap className="h-4 w-4 mr-2" />
+                                  <span>
+                                    Education: {job.attributes.education}
+                                  </span>
+                                </div>
+                                <div className="flex items-center text-muted-foreground">
+                                  <Banknote className="h-4 w-4 mr-2" />
+                                  <span>
+                                    Salary: {job.attributes.salary} PKR
+                                  </span>
+                                </div>
+                                <div className="flex items-center text-muted-foreground">
+                                  <Clock className="h-4 w-4 mr-2" />
+                                  <span>
+                                    Apply before:{" "}
+                                    {new Date(
+                                      job.attributes.deadline
+                                    ).toLocaleDateString()}
+                                  </span>
+                                </div>
+                              </div>
                             </div>
-                            <div className="space-y-2">
-                              <div className="flex items-center text-muted-foreground">
-                                <Building2 className="h-4 w-4 mr-2" />
-                                <span>
-                                  {job.attributes.creator.data.attributes.name}
-                                </span>
-                              </div>
-                              <div className="flex items-center text-muted-foreground">
-                                <GraduationCap className="h-4 w-4 mr-2" />
-                                <span>
-                                  Education Required: {job.attributes.education}
-                                </span>
-                              </div>
-                              <div className="flex items-center text-muted-foreground">
-                                <Banknote className="h-4 w-4 mr-2" />
-                                <span>Salary: {job.attributes.salary}</span>
-                              </div>
-                              <div className="flex items-center text-muted-foreground">
-                                <Calendar className="h-4 w-4 mr-2" />
-                                <span>
-                                  Last Date to Apply: {job.attributes.deadline}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                        <CardFooter className="flex gap-2">
-                          {!user?.isCompany && (
-                            <Button
-                              className="w-full bg-black hover:bg-gray-800"
-                              onClick={() => {
-                                if (user) window.alert("apply")
-                                else router.push("/login")
-                              }}
-                            >
-                              Apply Now
-                            </Button>
-                          )}
-                          <Link href={`/job/${job.id}`} className="w-full">
-                            <Button variant="outline" className="w-full">
-                              Details
-                            </Button>
-                          </Link>
-                        </CardFooter>
-                      </Card>
-                    ))}
+                          </CardContent>
+                          <CardFooter className="flex gap-2">
+                            {!user?.isCompany &&
+                              currentUserStatus === "notapplied" && (
+                                <Button
+                                  className="w-full bg-black hover:bg-zinc-800"
+                                  onClick={async (e) => {
+                                    e.target.disabled = true
+                                    e.target.innerHTML = "Applying"
+                                    if (!user) return router.push("/login")
+
+                                    const data = await updateJob(
+                                      token,
+                                      { applicants: [...applicants, user?.id] },
+                                      job.id
+                                    )
+                                    job.attributes = data.data.attributes
+                                    setJobs({ ...jobs })
+                                  }}
+                                  disabled={isExpired}
+                                >
+                                  {isExpired ? "Expired" : "Apply Now"}
+                                </Button>
+                              )}
+                            {user?.id === job.attributes.creator.data.id && (
+                              <Link
+                                href={"/job/" + job.id + "/edit"}
+                                className="w-full"
+                              >
+                                <Button variant="outline" className="w-full">
+                                  <Edit className="w-4 h-4 mr-2" />
+                                  Edit Job
+                                </Button>
+                              </Link>
+                            )}
+                            <Link href={"/job/" + job.id} className="w-full">
+                              <Button variant="outline" className="w-full">
+                                View Details
+                              </Button>
+                            </Link>
+                          </CardFooter>
+                        </Card>
+                      )
+                    })}
                   </div>
 
                   {/* Updated Pagination */}

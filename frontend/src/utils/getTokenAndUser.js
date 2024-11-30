@@ -8,7 +8,16 @@ export default tryCatch(async function () {
   const headersList = { Authorization: "Bearer " + token }
 
   const response = await fetch(
-    process.env.NEXT_PUBLIC_BACKEND_ORIGIN + "/api/users/me",
+    process.env.NEXT_PUBLIC_BACKEND_ORIGIN +
+      "/api/users/me" +
+      "?populate[appliedJobs][populate][creator]=*" +
+      "&populate[createdJobs][populate][applicants]=*" +
+      "&populate[createdJobs][populate][acceptedApplicants]=*" +
+      "&populate[createdJobs][populate][rejectedApplicants]=*" +
+      "&populate[acceptedJobs]=*" +
+      "&populate[rejectedJobs]=*" +
+      "&populate[cv]=*" +
+      "&populate[profilePicture]=*",
     { headers: headersList }
   )
 

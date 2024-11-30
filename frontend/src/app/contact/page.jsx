@@ -15,8 +15,8 @@ export default function ContactUsPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsSubmitting(true)
-    // Here you would typically send the form data to your backend
-    await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulating API call
+
+    await new Promise((resolve) => setTimeout(resolve, 1000))
     setIsSubmitting(false)
     alert("Thank you for your message. We will get back to you soon!")
   }
@@ -74,7 +74,7 @@ export default function ContactUsPage() {
                   className="w-full"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Sending..." : "Send Message"}
+                  {isSubmitting ? "Sending" : "Send Message"}
                 </Button>
               </form>
             </CardContent>
