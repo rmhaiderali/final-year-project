@@ -85,7 +85,7 @@ export default function ProfilePage() {
                 <Link href="/profile/edit">
                   <Button>Edit Profile</Button>
                 </Link>
-                {!user.isCompany && (
+                {user && !user.isCompany && (
                   <a href={user.cv} download>
                     <Button variant="outline">
                       <Download className="mr-2 h-4 w-4" />

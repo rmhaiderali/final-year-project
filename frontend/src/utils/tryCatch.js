@@ -5,8 +5,8 @@ export default function (func) {
     try {
       return await func(...params)
     } catch (error) {
-      toast.error("Error while connecting to server")
-      throw error
+      toast.error(error || "Error while connecting to server")
+      // throw error
     }
   }
 }

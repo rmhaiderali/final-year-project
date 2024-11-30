@@ -9,7 +9,6 @@ export default tryCatch(async function ({
   let query = ""
 
   // Salary Filters
-
   if (filtersArray[0])
     query += "&filters[salary][$gte]=30000&filters[salary][$lte]=50000"
   if (filtersArray[1])
@@ -54,9 +53,9 @@ export default tryCatch(async function ({
     query += `&filters[creator][address][$containsi]=${location}`
   }
 
-  let response = await fetch(
+  const response = await fetch(
     process.env.NEXT_PUBLIC_BACKEND_ORIGIN +
-      "/api/jobs?&pagination[pageSize]=100&populate=*" +
+      "/api/jobs?&pagination[pageSize]=300&populate=*" +
       query
   )
 

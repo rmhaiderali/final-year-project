@@ -14,8 +14,11 @@ import { useUserContext } from "@/contexts/user-context"
 import { toast } from "react-toastify"
 import updateMeJson from "@/utils/updateMe(json)"
 import { FullScreenLoading } from "@/components/custom/loading"
+import { useRouter } from "next/navigation"
 
 export default function EditUserProfilePage() {
+  const router = useRouter()
+
   const { user, setUser, token } = useUserContext()
 
   if (!user) {
@@ -24,8 +27,8 @@ export default function EditUserProfilePage() {
 
   const [updatedUser, setUpdatedUser] = useState({ ...user })
 
-  function setUpdatedUserInfo(e) {
-    setUpdatedUser({ ...updatedUser, [e.target.name]: e.target.value })
+  function handleInputChange(e) {
+    setUpdatedUser((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
   const [isLoading, setIsLoading] = useState(false)
@@ -50,13 +53,15 @@ export default function EditUserProfilePage() {
     const jsonData = Object.fromEntries(formData)
 
     const data = await updateMeJson(token, jsonData)
-
     if (data !== "OK") {
-      return toast.error("Error during updating profile")
-    } else {
-      setUser(updatedUser)
-      toast.success("Updated profile successfully")
+      toast.error("Error during updating profile")
+      setIsLoading(false)
+      return
     }
+    setUser(updatedUser)
+
+    toast.success("Updated profile successfully")
+    router.replace("/profile")
 
     setIsLoading(false)
   }
@@ -121,7 +126,7 @@ export default function EditUserProfilePage() {
                       name="name"
                       placeholder="Enter name"
                       value={updatedUser.name}
-                      onChange={setUpdatedUserInfo}
+                      onChange={handleInputChange}
                       required
                     />
                   </div>
@@ -132,7 +137,7 @@ export default function EditUserProfilePage() {
                       name="username"
                       placeholder="Enter username"
                       value={updatedUser.username}
-                      onChange={setUpdatedUserInfo}
+                      onChange={handleInputChange}
                       required
                     />
                   </div>
@@ -146,7 +151,7 @@ export default function EditUserProfilePage() {
                       type="email"
                       placeholder="Enter email"
                       value={updatedUser.email}
-                      onChange={setUpdatedUserInfo}
+                      onChange={handleInputChange}
                       required
                     />
                   </div>
@@ -158,7 +163,7 @@ export default function EditUserProfilePage() {
                       type="tel"
                       placeholder="Enter phone number"
                       value={updatedUser.phone}
-                      onChange={setUpdatedUserInfo}
+                      onChange={handleInputChange}
                       required
                     />
                   </div>
@@ -170,7 +175,7 @@ export default function EditUserProfilePage() {
                     name="address"
                     placeholder="Enter address"
                     value={updatedUser.address}
-                    onChange={setUpdatedUserInfo}
+                    onChange={handleInputChange}
                     required
                   />
                 </div>
@@ -186,7 +191,7 @@ export default function EditUserProfilePage() {
                       (user.isCompany ? "company" : "yourself")
                     }
                     value={updatedUser.bio}
-                    onChange={setUpdatedUserInfo}
+                    onChange={handleInputChange}
                   />
                 </div>
                 <div className="space-y-2">
@@ -203,16 +208,16 @@ export default function EditUserProfilePage() {
                         : "https://twitter.com/user"
                     }
                     value={updatedUser.website}
-                    onChange={setUpdatedUserInfo}
+                    onChange={handleInputChange}
                   />
                 </div>
 
                 <div className="flex justify-between">
                   <Link href="/profile">
-                    <Button variant="outline">Back</Button>
+                    <Button variant="outline">Cancel</Button>
                   </Link>
                   <Button type="submit" disabled={isLoading}>
-                    {isLoading ? "Updating..." : "Update Profile"}
+                    {isLoading ? "Updating" : "Update Profile"}
                   </Button>
                 </div>
               </form>

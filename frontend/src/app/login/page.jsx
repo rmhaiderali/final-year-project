@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "react-toastify"
 import loginJson from "@/utils/login(json)"
 import { FullScreenLoading } from "@/components/custom/loading"
+import getTokenAndUser from "@/utils/getTokenAndUser"
 
 export default function LoginPage() {
   const { user, setUser, setToken } = useUserContext()
@@ -31,20 +32,24 @@ export default function LoginPage() {
   async function onSubmit(e) {
     e.preventDefault()
     setIsLoading(true)
+
     const formData = new FormData(e.target)
     const jsonData = Object.fromEntries(formData)
 
     const data = await loginJson(jsonData)
-
     if (data.error) {
       toast.error(data.error.message)
-    } else {
-      toast.success("Log in successful")
-      localStorage.setItem("token", data.jwt)
-      setToken(data.jwt)
-      setUser(data.user)
-      router.push("/")
+      setIsLoading(false)
+      return
     }
+    localStorage.setItem("token", data.jwt)
+
+    const [token, user] = await getTokenAndUser()
+    setToken(token)
+    setUser(user)
+
+    toast.success("Log in successful")
+    router.push("/")
 
     setIsLoading(false)
   }
@@ -80,7 +85,7 @@ export default function LoginPage() {
                 />
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Logging in..." : "Login"}
+                {isLoading ? "Logging in" : "Login"}
               </Button>
             </form>
             {/* <div className="mt-4 text-center text-sm">
