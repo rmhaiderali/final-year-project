@@ -65,20 +65,67 @@
       "inversedBy": "users",
       "configurable": false
     },
-    "profilePicture": {
-      "type": "string"
-    },
     "name": {
-      "type": "string",
-      "required": true
-    },
-    "company": {
       "type": "string",
       "required": true
     },
     "address": {
       "type": "string",
+      "required": false
+    },
+    "appliedJobs": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::job.job",
+      "inversedBy": "applicants"
+    },
+    "createdJobs": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::job.job",
+      "mappedBy": "creator"
+    },
+    "cv": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "files"
+      ]
+    },
+    "isCompany": {
+      "type": "boolean",
+      "default": false,
       "required": true
+    },
+    "profilePicture": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "phone": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "string"
+    },
+    "acceptedJobs": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::job.job",
+      "mappedBy": "acceptedApplicants"
+    },
+    "rejectedJobs": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::job.job",
+      "mappedBy": "rejectedApplicants"
     }
   }
 }

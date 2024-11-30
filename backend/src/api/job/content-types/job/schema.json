@@ -4,7 +4,8 @@
   "info": {
     "singularName": "job",
     "pluralName": "jobs",
-    "displayName": "Job"
+    "displayName": "Job",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -19,15 +20,18 @@
       "type": "enumeration",
       "enum": [
         "Permanent",
-        "Contract"
+        "Contract",
+        "Full Time",
+        "Part Time"
       ],
       "required": true
     },
     "education": {
       "type": "enumeration",
       "enum": [
+        "Ph.D.",
         "Master",
-        "Bachlor",
+        "Bachelor",
         "Intermediate"
       ],
       "required": true
@@ -44,8 +48,52 @@
       "required": true
     },
     "salary": {
+      "required": true,
+      "type": "integer"
+    },
+    "applicants": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "appliedJobs"
+    },
+    "creator": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "createdJobs"
+    },
+    "deadline": {
+      "type": "date",
+      "required": true
+    },
+    "experience": {
       "type": "integer",
       "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "acceptedApplicants": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "acceptedJobs"
+    },
+    "rejectedApplicants": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "rejectedJobs"
     }
   }
 }
