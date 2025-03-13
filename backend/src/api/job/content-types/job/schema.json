@@ -1,0 +1,93 @@
+{
+  "kind": "collectionType",
+  "collectionName": "jobs",
+  "info": {
+    "singularName": "job",
+    "pluralName": "jobs",
+    "displayName": "Job",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "applicants": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "appliedJobs"
+    },
+    "creator": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "created_jobs"
+    },
+    "acceptedApplicants": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "acceptedJobs"
+    },
+    "rejectedApplicants": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "rejected_jobs"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "Permanent",
+        "Contract",
+        "Full Time",
+        "Part Time"
+      ],
+      "required": true
+    },
+    "education": {
+      "type": "enumeration",
+      "enum": [
+        "Ph.D.",
+        "Master",
+        "Bachelor",
+        "Intermediate"
+      ],
+      "required": true
+    },
+    "industry": {
+      "type": "enumeration",
+      "enum": [
+        "Business",
+        "Banking",
+        "Education",
+        "Telecommunication",
+        "Others"
+      ],
+      "required": true
+    },
+    "salary": {
+      "type": "integer",
+      "required": true
+    },
+    "experience": {
+      "type": "integer",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "images": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": true
+    }
+  }
+}
