@@ -45,7 +45,7 @@ export default function CandidateSignUpPage() {
     jsonData.isCompany = false
 
     const response = await signupJson(jsonData)
-    if (response) return setIsLoading(false)
+    if (!response) return setIsLoading(false)
 
     localStorage.setItem("token", response.jwt)
 
