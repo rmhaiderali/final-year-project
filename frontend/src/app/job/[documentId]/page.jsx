@@ -76,6 +76,12 @@ export default function JobDetailPage({ params }) {
     rejected: "bg-red-100 hover:bg-red-100 text-red-800",
   }[currentUserStatus]
 
+  function getMediaURL(media) {
+    if (!media || !media.url) return ""
+    const backend = process.env.NEXT_PUBLIC_BACKEND
+    return (media.url.startsWith("/") ? backend : "") + media.url
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -170,15 +176,13 @@ export default function JobDetailPage({ params }) {
                     <h2 className="text-xl font-semibold mb-4">Job Images</h2>
                     <Carousel className="w-full max-w-xl mx-auto">
                       <CarouselContent className="items-center">
-                        {job.images.map((src, index) => (
+                        {job.images.map((image, index) => (
                           <CarouselItem key={index}>
                             <div className="p-1">
                               <Card>
                                 <CardContent className="flex aspect-video items-center justify-center p-6">
                                   <Image
-                                    src={
-                                      process.env.NEXT_PUBLIC_BACKEND + src.url
-                                    }
+                                    src={getMediaURL(image)}
                                     alt={"Company image " + (index + 1)}
                                     width={600}
                                     height={400}
