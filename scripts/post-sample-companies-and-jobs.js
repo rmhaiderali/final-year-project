@@ -695,8 +695,12 @@ async function addJob(job) {
     body: JSON.stringify({ data: job }),
   }
 
-  const response = await fetch("http://127.0.0.1:1337/api/jobs", requestOptions)
+  const response = await fetch(
+    "http://127.0.0.1:1337/api/jobs?populate=*",
+    requestOptions
+  )
   const json = await response.json()
+  if (json.error) console.error(json.error.message)
   console.log({ company: json.data.creator.username, job: json.data.title })
 }
 
@@ -718,7 +722,7 @@ async function addCompany(company) {
     requestOptions
   )
   const json = await response.json()
-
+  if (json.error) console.error(json.error.message)
   console.log({ company: json.user.username })
 
   createdJobs.forEach(async (job) => {
