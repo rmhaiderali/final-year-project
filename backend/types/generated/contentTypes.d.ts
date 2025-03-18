@@ -453,6 +453,7 @@ export interface ApiJobJob extends Struct.CollectionTypeSchema {
       'manyToOne',
       'plugin::users-permissions.user'
     >;
+    deadline: Schema.Attribute.Date & Schema.Attribute.Required;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     education: Schema.Attribute.Enumeration<
       ['Ph.D.', 'Master', 'Bachelor', 'Intermediate']
@@ -1005,10 +1006,10 @@ export interface PluginUsersPermissionsUser
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
-    created_jobs: Schema.Attribute.Relation<'oneToMany', 'api::job.job'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    createdJobs: Schema.Attribute.Relation<'oneToMany', 'api::job.job'>;
     cv: Schema.Attribute.Media<'files'>;
     email: Schema.Attribute.Email &
       Schema.Attribute.Required &
@@ -1034,7 +1035,7 @@ export interface PluginUsersPermissionsUser
     profilePicture: Schema.Attribute.Media<'images'>;
     provider: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
-    rejected_jobs: Schema.Attribute.Relation<'manyToMany', 'api::job.job'>;
+    rejectedJobs: Schema.Attribute.Relation<'manyToMany', 'api::job.job'>;
     resetPasswordToken: Schema.Attribute.String & Schema.Attribute.Private;
     role: Schema.Attribute.Relation<
       'manyToOne',

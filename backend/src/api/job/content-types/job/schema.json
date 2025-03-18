@@ -21,23 +21,11 @@
       "target": "plugin::users-permissions.user",
       "mappedBy": "appliedJobs"
     },
-    "creator": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "plugin::users-permissions.user",
-      "inversedBy": "created_jobs"
-    },
     "acceptedApplicants": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "plugin::users-permissions.user",
       "mappedBy": "acceptedJobs"
-    },
-    "rejectedApplicants": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "plugin::users-permissions.user",
-      "mappedBy": "rejected_jobs"
     },
     "type": {
       "type": "enumeration",
@@ -83,11 +71,28 @@
       "required": true
     },
     "images": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
       "allowedTypes": [
         "images"
-      ],
-      "type": "media",
-      "multiple": true
+      ]
+    },
+    "creator": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "createdJobs"
+    },
+    "rejectedApplicants": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "rejectedJobs"
+    },
+    "deadline": {
+      "type": "date",
+      "required": true
     }
   }
 }

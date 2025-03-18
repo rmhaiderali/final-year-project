@@ -79,18 +79,19 @@
       "target": "api::job.job",
       "inversedBy": "applicants"
     },
-    "created_jobs": {
+    "createdJobs": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::job.job",
       "mappedBy": "creator"
     },
     "cv": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "files"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
     },
     "isCompany": {
       "type": "boolean",
@@ -98,11 +99,12 @@
       "required": true
     },
     "profilePicture": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
     },
     "phone": {
       "type": "string"
@@ -119,7 +121,7 @@
       "target": "api::job.job",
       "inversedBy": "acceptedApplicants"
     },
-    "rejected_jobs": {
+    "rejectedJobs": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::job.job",

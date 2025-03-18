@@ -13,4 +13,24 @@ module.exports = ({ env }) => ({
       },
     },
   },
+  "users-permissions": {
+    config: {
+      register: {
+        allowedFields: [
+          "name",
+          "address",
+          "appliedJobs",
+          "createdJobs",
+          "cv",
+          "isCompany",
+          "profilePicture",
+          "phone",
+          "website",
+          "bio",
+          "acceptedJobs",
+          "rejectedJobs",
+        ],
+      },
+    },
+  },
 });
