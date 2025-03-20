@@ -1,0 +1,21 @@
+In prototype phase you have to make
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+- Full HTML+CSS DESIGN for the frontend
+- LOGIN/LOGOUT FUNCTIONALITY ON FRONTEND which must be controlled with backend(stripi) users table.
+- Frontend registered users can update their profiles with name,address,email,  company name along with their profile pictures.
+- A simple job entery form for the registered users containing the following fields
+ -Job title===textfield
+- Job type=====Select(Permanent/Contract)
+ -Education====Select(Master/Bachlor/Intermediate)
+ -Industry===Select(Business/Banking/Education/Telecommunication/others)
+ -Salary if any (textfield)
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+Best,
+Amjad Iqbal Khan
