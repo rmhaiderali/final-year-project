@@ -1,6 +1,15 @@
 /** @type {import("next").NextConfig} */
 
-const backend = new URL(process.env.NEXT_PUBLIC_BACKEND)
+let backend = null
+
+try {
+  backend = new URL(process.env.NEXT_PUBLIC_BACKEND)
+} catch (e) {}
+
+if (!backend) {
+  console.error("env.NEXT_PUBLIC_BACKEND is not a valid URL")
+  process.exit(1)
+}
 
 const nextConfig = {
   images: {
