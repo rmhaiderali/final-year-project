@@ -66,7 +66,7 @@ export default function CandidateSignUpPage() {
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Create Candidate Account</CardTitle>
             <CardDescription>
-              Start your job search journey with JobFinder
+              Start your job search journey with Job Finder
             </CardDescription>
           </CardHeader>
           <CardContent>

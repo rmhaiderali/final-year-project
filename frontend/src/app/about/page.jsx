@@ -28,7 +28,7 @@ export default function AboutUsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-3xl font-bold text-center">
-                About JobFinder
+                About Us
               </CardTitle>
             </CardHeader>
             <CardContent className="prose max-w-none">

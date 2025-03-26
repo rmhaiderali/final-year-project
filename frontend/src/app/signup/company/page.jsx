@@ -66,7 +66,7 @@ export default function CompanySignUpPage() {
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Create Company Account</CardTitle>
             <CardDescription>
-              Start hiring the best talent with JobFinder
+              Start hiring the best talent with Job Finder
             </CardDescription>
           </CardHeader>
           <CardContent>
