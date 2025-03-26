@@ -8,7 +8,7 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">About Job Finder</h3>
             <p className="text-sm text-gray-600">
-              JobFinder is your go-to platform for finding the best job
+              Job Finder is your go-to platform for finding the best job
               opportunities across various industries.
             </p>
           </div>
@@ -113,7 +113,7 @@ export function Footer() {
         </div>
         <div className="mt-8 border-t border-gray-200 pt-8 text-center">
           <p className="text-sm text-gray-600">
-            &copy; 2025 JobFinder. All rights reserved.
+            © {new Date().getFullYear()} Job Finder. All rights reserved.
           </p>
         </div>
       </div>

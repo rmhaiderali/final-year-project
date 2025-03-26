@@ -2,32 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.loading {
-  width: 26px;
-  height: 26px;
-  animation: loading 0.75s linear infinite;
-}
-@keyframes loading {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-.loading > :first-child {
-  fill: none;
-  opacity: 0.2;
-  stroke-width: 4;
-  stroke: currentColor;
-}
-.loading > :last-child {
-  fill: none;
-  stroke-width: 4;
-  stroke-dasharray: 80;
-  stroke-dashoffset: 60;
-  stroke: currentColor;
-}
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -56,6 +30,7 @@
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
@@ -83,13 +58,46 @@
     --chart-5: 340 75% 55%;
   }
 }
+
 @layer base {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.loading {
+  width: 26px;
+  height: 26px;
+  animation: loading 0.75s linear infinite;
+}
+
+@keyframes loading {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading > :first-child {
+  fill: none;
+  opacity: 0.2;
+  stroke-width: 4;
+  stroke: currentColor;
+}
+
+.loading > :last-child {
+  fill: none;
+  stroke-width: 4;
+  stroke-dasharray: 80;
+  stroke-dashoffset: 60;
+  stroke: currentColor;
 }
 
 .prose h2 {

@@ -57,7 +57,7 @@ export default function LoginPage() {
         <Card className="max-w-[400px] mx-auto">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Login</CardTitle>
-            <CardDescription>Welcome back to JobFinder</CardDescription>
+            <CardDescription>Welcome back to Job Finder</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={onSubmit} className="space-y-4">

@@ -19,7 +19,7 @@ export default function SignUpTypePage() {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold">Choose Account Type</h1>
           <p className="text-muted-foreground mt-2">
-            Select how you want to use JobFinder
+            Select how you want to use Job Finder
           </p>
         </div>
         <div className="grid md:grid-cols-2 gap-6">
