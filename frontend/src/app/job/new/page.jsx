@@ -53,6 +53,7 @@ export default function CreateJobPage() {
     setSelectedImages((prevImages) => prevImages.filter((_, i) => i !== index))
   }
 
+  console.log("use fill() to auto fill job")
   window.fill = () =>
     Object.entries({
       title: new Date().toTimeString().split(" ")[0],
