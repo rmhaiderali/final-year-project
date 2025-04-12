@@ -22,6 +22,7 @@ export default function EditUserProfilePage() {
 
   const { user, setUser, token } = useUserContext()
 
+  console.log("use log() to log user")
   window.log = () => console.log(user)
 
   if (!user) {
