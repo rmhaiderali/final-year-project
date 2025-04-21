@@ -50,20 +50,20 @@ export default function Home() {
 
         <button
           onClick={() => router.push("/jobs/view")}
-          className="w-[253px] text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"
+          className="w-[253px] text-white bg-indigo-500 border-0 py-2 px-4 focus:outline-none hover:bg-indigo-600 rounded text-lg"
         >
           View Existing Jobs
         </button>
         <button
           onClick={() => router.push("/jobs/post")}
-          className="w-[253px] text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"
+          className="w-[253px] text-white bg-indigo-500 border-0 py-2 px-4 focus:outline-none hover:bg-indigo-600 rounded text-lg"
         >
           Post a New Job
         </button>
 
         <button
           onClick={() => router.push("/profile")}
-          className="w-[253px] text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"
+          className="w-[253px] text-white bg-indigo-500 border-0 py-2 px-4 focus:outline-none hover:bg-indigo-600 rounded text-lg"
         >
           Change Profile Details
         </button>
@@ -72,7 +72,7 @@ export default function Home() {
             localStorage.removeItem("token")
             router.replace("/login")
           }}
-          className="w-[253px] text-white bg-red-500 border-0 py-2 px-8 focus:outline-none hover:bg-red-600 rounded text-lg"
+          className="w-[253px] text-white bg-red-500 border-0 py-2 px-4 focus:outline-none hover:bg-red-600 rounded text-lg"
         >
           Logout
         </button>
