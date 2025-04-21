@@ -1,3 +1,8 @@
+import {
+  getOffsetDaysFromDate,
+  getDateFromOffsetDays,
+} from "./dates-to-from-offest-days.js"
+
 const data = [
   {
     username: "Apple",
@@ -15,7 +20,7 @@ const data = [
         education: "Bachelor",
         industry: "Telecommunication",
         salary: 85000,
-        deadline: "2024-03-15",
+        deadline: "2024-10-15",
         experience: 3,
         description:
           "Develop and maintain cutting-edge software solutions for Apple devices, ensuring high performance and reliability.",
@@ -49,7 +54,7 @@ const data = [
         education: "Bachelor",
         industry: "Telecommunication",
         salary: 60000,
-        deadline: "2024-04-15",
+        deadline: "2024-10-26",
         experience: 3,
         description:
           "Develop and maintain scalable applications using modern cloud technologies. Collaborate with cross-functional teams to deliver high-quality software.",
@@ -60,7 +65,7 @@ const data = [
         education: "Master",
         industry: "Business",
         salary: 92000,
-        deadline: "2025-04-20",
+        deadline: "2025-04-12",
         experience: 5,
         description:
           "Analyze large datasets to generate actionable insights. Use machine learning techniques to optimize Google Ads and search algorithms.",
@@ -94,7 +99,7 @@ const data = [
         education: "Bachelor",
         industry: "Business",
         salary: 60000,
-        deadline: "2024-07-01",
+        deadline: "2024-11-01",
         experience: 2,
         description:
           "We are looking for a marketing specialist to drive Samsung's product marketing strategies. The role requires a creative and analytical mindset, with experience in developing marketing campaigns that resonate with a global audience.",
@@ -117,7 +122,7 @@ const data = [
         education: "Bachelor",
         industry: "Telecommunication",
         salary: 70000,
-        deadline: "2024-09-15",
+        deadline: "2024-11-21",
         experience: 3,
         description:
           "Responsible for designing, implementing, and maintaining network systems for our clients.",
@@ -128,7 +133,7 @@ const data = [
         education: "Master",
         industry: "Telecommunication",
         salary: 85000,
-        deadline: "2025-02-28",
+        deadline: "2025-02-22",
         experience: 5,
         description:
           "Develop and maintain mobile applications, ensuring high-quality code and seamless performance across devices.",
@@ -196,7 +201,7 @@ const data = [
         education: "Master",
         industry: "Education",
         salary: 70000,
-        deadline: "2024-10-01",
+        deadline: "2024-10-12",
         experience: 3,
         description:
           "Oversee academic programs, coordinate faculty, and ensure the effective implementation of curricula across departments.",
@@ -253,7 +258,7 @@ const data = [
         education: "Master",
         industry: "Telecommunication",
         salary: 110000,
-        deadline: "2024-07-10",
+        deadline: "2024-10-22",
         experience: 7,
         description:
           "Design and implement scalable cloud infrastructure solutions for enterprise clients, ensuring performance and cost-efficiency.",
@@ -298,7 +303,7 @@ const data = [
         education: "Bachelor",
         industry: "Others",
         salary: 100000,
-        deadline: "2024-08-25",
+        deadline: "2024-11-24",
         experience: 4,
         description:
           "Lead the development of next-generation electric vehicle models, focusing on vehicle performance, safety, and sustainability.",
@@ -321,7 +326,7 @@ const data = [
         education: "Master",
         industry: "Telecommunication",
         salary: 105000,
-        deadline: "2025-04-20",
+        deadline: "2025-04-06",
         experience: 6,
         description:
           "Design and develop advanced semiconductor devices, improving performance and energy efficiency for next-generation computing systems.",
@@ -366,7 +371,7 @@ const data = [
         education: "Master",
         industry: "Banking",
         salary: 90000,
-        deadline: "2025-04-05",
+        deadline: "2025-03-05",
         experience: 3,
         description:
           "Identify and assess risks within financial portfolios, develop strategies to mitigate risks, and ensure regulatory compliance.",
@@ -389,7 +394,7 @@ const data = [
         education: "Ph.D.",
         industry: "Education",
         salary: 85000,
-        deadline: "2024-05-10",
+        deadline: "2024-11-05",
         experience: 8,
         description:
           "Conduct cutting-edge research in science and technology fields, contribute to academic publications, and collaborate with faculty on innovative projects.",
@@ -457,7 +462,7 @@ const data = [
         education: "Bachelor",
         industry: "Banking",
         salary: 80000,
-        deadline: "2024-02-15",
+        deadline: "2024-11-28",
         experience: 2,
         description:
           "Assess credit risk of clients, analyze financial statements, and develop strategies to manage risk in loan portfolios.",
@@ -468,7 +473,7 @@ const data = [
         education: "Master",
         industry: "Banking",
         salary: 110000,
-        deadline: "2025-04-05",
+        deadline: "2025-04-03",
         experience: 4,
         description:
           "Assist in executing investment banking transactions, conduct financial modeling, and support senior bankers in client relationship management.",
@@ -491,7 +496,7 @@ const data = [
         education: "Master",
         industry: "Telecommunication",
         salary: 105000,
-        deadline: "2025-03-30",
+        deadline: "2025-02-25",
         experience: 8,
         description:
           "Develop innovative virtual reality technologies, working on hardware and software solutions to enhance user experiences in virtual environments.",
@@ -502,7 +507,7 @@ const data = [
         education: "Bachelor",
         industry: "Business",
         salary: 85000,
-        deadline: "2025-04-05",
+        deadline: "2025-03-16",
         experience: 7,
         description:
           "Analyze social media data to identify trends, track performance metrics, and support the development of targeted marketing strategies.",
@@ -525,7 +530,7 @@ const data = [
         education: "Master",
         industry: "Telecommunication",
         salary: 115000,
-        deadline: "2025-03-20",
+        deadline: "2025-03-19",
         experience: 4,
         description:
           "Design and implement AI-based solutions for enterprise clients, focusing on integrating machine learning models into business processes.",
@@ -536,7 +541,7 @@ const data = [
         education: "Bachelor",
         industry: "Telecommunication",
         salary: 100000,
-        deadline: "2025-04-10",
+        deadline: "2025-04-08",
         experience: 3,
         description:
           "Develop and maintain scalable cloud infrastructure for IBM's cloud solutions, ensuring optimal performance and security.",
@@ -559,7 +564,7 @@ const data = [
         education: "Ph.D.",
         industry: "Education",
         salary: 85000,
-        deadline: "2025-03-25",
+        deadline: "2025-03-24",
         experience: 1,
         description:
           "Conduct advanced research in scientific fields, collaborate with faculty on projects, and publish research findings in academic journals.",
@@ -570,7 +575,7 @@ const data = [
         education: "Bachelor",
         industry: "Education",
         salary: 65000,
-        deadline: "2025-04-10",
+        deadline: "2025-04-09",
         experience: 2,
         description:
           "Support research projects by managing laboratory operations, preparing experiments, and maintaining equipment and materials.",
@@ -593,7 +598,7 @@ const data = [
         education: "Master",
         industry: "Telecommunication",
         salary: 100000,
-        deadline: "2025-03-15",
+        deadline: "2025-03-14",
         experience: 3,
         description:
           "Analyze large datasets to derive insights, build models, and support decision-making for Twitter's platform optimization.",
@@ -604,7 +609,7 @@ const data = [
         education: "Bachelor",
         industry: "Telecommunication",
         salary: 75000,
-        deadline: "2025-04-01",
+        deadline: "2025-03-06",
         experience: 2,
         description:
           "Monitor and review content to ensure compliance with Twitter's community guidelines, working with cross-functional teams to maintain a safe environment.",
@@ -627,7 +632,7 @@ const data = [
         education: "Bachelor",
         industry: "Telecommunication",
         salary: 95000,
-        deadline: "2025-03-20",
+        deadline: "2025-03-21",
         experience: 3,
         description:
           "Develop and maintain mobile applications for streaming on iOS and Android platforms, ensuring smooth user experiences and integration with Netflix's services.",
@@ -638,7 +643,7 @@ const data = [
         education: "Master",
         industry: "Telecommunication",
         salary: 90000,
-        deadline: "2025-04-05",
+        deadline: "2025-04-17",
         experience: 4,
         description:
           "Analyze content performance data, collaborate with content teams to optimize the streaming library, and provide strategic recommendations for content acquisition.",
@@ -661,7 +666,7 @@ const data = [
         education: "Master",
         industry: "Others",
         salary: 105000,
-        deadline: "2025-03-15",
+        deadline: "2025-03-13",
         experience: 4,
         description:
           "Design, develop, and test automotive systems, components, and vehicles, ensuring quality, safety, and performance standards are met.",
@@ -672,7 +677,7 @@ const data = [
         education: "Bachelor",
         industry: "Business",
         salary: 85000,
-        deadline: "2025-04-01",
+        deadline: "2025-04-04",
         experience: 3,
         description:
           "Manage the flow of materials and components for manufacturing, optimize inventory processes, and collaborate with global suppliers to ensure timely production.",
@@ -680,6 +685,18 @@ const data = [
     ],
   },
 ]
+
+for (const company of data) {
+  for (const job of company.createdJobs) {
+    const offest = getOffsetDaysFromDate(
+      new Date(job.deadline),
+      new Date("2025-01-10")
+    )
+    job.deadline = getDateFromOffsetDays(offest, new Date())
+      .toISOString()
+      .split("T")[0]
+  }
+}
 
 const token = ""
 
